@@ -1,36 +1,14 @@
 class Solution {
     public int solution(int[] arr1, int[] arr2) {
-        int answer = 0;
-        int sum1 = 0;
-        int sum2 = 0;
+        if (arr1.length < arr2.length) return -1;
+        else if (arr1.length > arr2.length) return 1;
         
-        if(arr1.length > arr2.length) {
-            answer = 1;
-            return answer;
+        int arr1Sum = 0, arr2Sum = 0;
+        for (int i = 0;i < arr1.length;i++) {
+            arr1Sum += arr1[i];
+            arr2Sum += arr2[i];
         }
-        else if(arr1.length < arr2.length) {
-            answer = -1;
-            return answer;
-        }
-        else {
-            for(int i : arr1) {
-                sum1 += i;
-            }
-            for(int i : arr2) {
-                sum2 += i;
-            }
-            if(sum1 > sum2) {
-                answer=1;
-                return answer;
-            }
-            else if(sum1 < sum2) {
-                answer=-1;
-                return answer;
-            }
-            else {
-                answer=0;
-                return answer;
-            }
-        }
+        
+        return arr1Sum == arr2Sum ? 0 : (arr1Sum > arr2Sum ? 1 : -1);
     }
 }
