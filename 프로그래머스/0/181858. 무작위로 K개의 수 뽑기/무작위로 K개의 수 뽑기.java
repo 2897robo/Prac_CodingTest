@@ -1,24 +1,21 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 class Solution {
     public int[] solution(int[] arr, int k) {
-        List<Integer> list = new ArrayList<>();
+        ArrayList<Integer> arrayList = new ArrayList<>();
+
+        for (int a : arr)
+            if (!arrayList.contains(a))
+                arrayList.add(a);
+
+        int idx = 0;
+        int[] answer = new int[k];
+        for (int i = 0;i < k;i++)
+            answer[i] = -1;
         
-        for(int i = 0; i < arr.length; i++){
-            if(list.size() == k){
-                break;
-            }
-            else if (!list.contains(arr[i])){
-                list.add(arr[i]);
-            }
-        }
+        for (int i = 0;i < k && i < arrayList.size();i++)
+            answer[i] = arrayList.get(i);
         
-        while(list.size() != k){
-            list.add(-1);
-        }
-        
-        return list.stream().mapToInt(j -> j).toArray();
+        return answer;
     }
 }
