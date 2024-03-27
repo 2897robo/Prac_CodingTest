@@ -1,36 +1,33 @@
-import java.util.HashMap;
-import java.util.Map;
-
-public class Solution {
+import java.util.*;
+class Solution {
     public int solution(int[] array) {
-        Map<Integer, Integer> countMap = new HashMap<>();
-        
-        // 배열에 있는 숫자들의 빈도수를 계산합니다.
-        for (int num : array) {
-            countMap.put(num, countMap.getOrDefault(num, 0) + 1);
-        }
-        
         int maxCount = 0;
-        int mode = -1;
-        boolean isMultipleModes = false;
-        
-        // 빈도수가 가장 큰 값을 찾습니다.
-        for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
-            int currentCount = entry.getValue();
-            if (currentCount > maxCount) {
-                maxCount = currentCount;
-                mode = entry.getKey();
-                isMultipleModes = false;
-            } else if (currentCount == maxCount) {
-                isMultipleModes = true;
+        int answer = 0;
+
+        Map<Integer, Integer> map = new HashMap<>();
+
+        // getOrDefault : 찾는 키가 존재한다면 찾는 키의 값을 반환하고 없다면 기본 값을 반환하는 메서드
+        // getPrDefault(Object key, V DefaultValue)
+        // 매개변수 : 이 메서드는 두개의 매개변수를 허용
+        // key : 값을 가져와야 하는 요소의 키
+        // defaultValue : 지정된 키로 매핑된 값이 없는 경우 반환되어야 하는 기본값
+        // 반환값 : 찾는 key가 존재하면 해당 key에 매핑되어 있는 값을 반환하고, 그렇지 않으면 디폴트 값이 반환
+
+        for(int number : array) {
+            int count = map.getOrDefault(number, 0) + 1;
+
+            if(count > maxCount) {
+                maxCount = count;
+                answer = number;
             }
+
+            else if(count == maxCount) {
+                answer = -1;
+            }
+
+            map.put(number, count);
         }
-        
-        // 최빈값이 여러 개인 경우 -1을 반환합니다.
-        if (isMultipleModes) {
-            return -1;
-        }
-        
-        return mode;
+
+        return answer;
     }
 }
