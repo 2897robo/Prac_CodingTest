@@ -1,5 +1,7 @@
 class Solution {
     public int solution(int n) {
-        return (int) Math.ceil((double) n / 7);
+        int answer = (n%7==0) ? n/7 : n/7 + 1;
+
+        return answer;
     }
 }
