@@ -1,62 +1,49 @@
-import java.util.Arrays;
-
 class Solution {
     public int[] solution(int N, int[] stages) {
-        double[] failureRate = new double[N];  // Array to store failure rates for each stage
-        int[] stageNumbers = new int[N];  // Array to store stage numbers
-
-        // Calculate the failure rate for each stage
+        double[] failure = new double[N]; // 실패율 저장 배열
+        int totalPlayers = stages.length; // 전체 플레이어 수
+        
         for (int i = 0; i < N; i++) {
-            int failedPlayers = 0;  // Number of players who failed at the current stage
-            int reachedPlayers = 0;  // Number of players who reached the current stage
+            int unclear = 0; // 스테이지에 도달했지만 통과하지 못한 사람 수
 
-            // Count the players who reached and failed the current stage
-            for (int j = 0; j < stages.length; j++) {
-                if (stages[j] >= i + 1) {
-                    reachedPlayers++;  // Player reached this stage
-                    if (stages[j] == i + 1) {
-                        failedPlayers++;  // Player failed this stage
-                    }
+            // 스테이지에 도달했지만 통과하지 못한 사람을 센다.
+            for (int stage : stages) {
+                if (stage == i + 1) {
+                    unclear++;
                 }
             }
-
-            // Calculate failure rate: only calculate if there are players who reached the stage
-            if (reachedPlayers > 0) {
-                failureRate[i] = (double) failedPlayers / reachedPlayers;
+            
+            // 실패율 계산: 분모는 해당 스테이지에 도달한 사람 수 (totalPlayers)
+            if (totalPlayers > 0) {
+                failure[i] = (double) unclear / totalPlayers;
+                totalPlayers -= unclear; // 스테이지를 통과하지 못한 사람을 제외하고 그 다음 스테이지로 진행
             } else {
-                failureRate[i] = 0;
+                failure[i] = 0; // 더 이상 도달한 사람이 없으면 실패율은 0
             }
-
-            stageNumbers[i] = i + 1;  // Store stage number starting from 1
         }
 
-        // Sort stages based on failure rate (Bubble Sort)
+        // 스테이지 번호와 실패율을 묶어서 정렬하기 위한 배열 생성
+        int[] answer = new int[N];
+        for (int i = 0; i < N; i++) {
+            answer[i] = i + 1; // 스테이지 번호 1부터 저장
+        }
+
+        // 실패율을 기준으로 스테이지 번호를 정렬 (내림차순)
         for (int i = 0; i < N - 1; i++) {
             for (int j = 0; j < N - 1 - i; j++) {
-                if (failureRate[j] < failureRate[j + 1]) {
-                    // Swap if the current stage has a lower failure rate
-                    double tempFail = failureRate[j];
-                    failureRate[j] = failureRate[j + 1];
-                    failureRate[j + 1] = tempFail;
+                if (failure[j] < failure[j + 1]) {
+                    // 실패율이 더 높은 스테이지가 앞에 오도록 스왑
+                    double tempFail = failure[j];
+                    failure[j] = failure[j + 1];
+                    failure[j + 1] = tempFail;
 
-                    int tempStage = stageNumbers[j];
-                    stageNumbers[j] = stageNumbers[j + 1];
-                    stageNumbers[j + 1] = tempStage;
-                } else if (failureRate[j] == failureRate[j + 1] && stageNumbers[j] > stageNumbers[j + 1]) {
-                    // If failure rates are equal, sort by stage number in ascending order
-                    int tempStage = stageNumbers[j];
-                    stageNumbers[j] = stageNumbers[j + 1];
-                    stageNumbers[j + 1] = tempStage;
+                    int tempStage = answer[j];
+                    answer[j] = answer[j + 1];
+                    answer[j + 1] = tempStage;
                 }
             }
         }
 
-        // Print the sorted stage numbers in English
-        System.out.println("Sorted stage numbers based on failure rate:");
-        for (int i = 0; i < stageNumbers.length; i++) {
-            System.out.println("Stage " + stageNumbers[i] + " has failure rate: " + failureRate[i]);
-        }
-
-        return stageNumbers;  // Return sorted stage numbers
+        return answer;
     }
 }
