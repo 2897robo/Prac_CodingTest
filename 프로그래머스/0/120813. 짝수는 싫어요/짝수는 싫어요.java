@@ -2,19 +2,16 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int n) {
-        List<Integer> arr = new ArrayList<>();
-        for(int i = 0; i <= n; i++) {
-            if(i % 2 == 1) {
-                arr.add(i);
-            }
+        List<Integer> list = new ArrayList<>();
+        for(int i=1; i<=n; i++) {
+            if(i%2!=0) list.add(i);
         }
         
-        // List를 int[] 배열로 변환합니다.
-        int[] result = new int[arr.size()];
-        for (int i = 0; i < arr.size(); i++) {
-            result[i] = arr.get(i);
+        int[] answer = new int[list.size()];
+        for(int i=0; i<list.size(); i++) {
+            answer[i] = list.get(i);
         }
         
-        return result;
+        return answer;
     }
 }
