@@ -11,27 +11,24 @@ public class Main {
 
         int n = Integer.parseInt(st.nextToken());
         int k = Integer.parseInt(st.nextToken());
-        int idx = 0;
         List<Integer> list = new ArrayList<>();
-
-        for(int i=0; i<n; i++) {
-            list.add(i+1);
+        for (int i = 1; i <= n; i++) {
+            list.add(i);
         }
 
-        while(!list.isEmpty()) {
-            idx = (idx + k -1) % list.size();
-
-            if(list.size() > 1) {
-                sb.append(list.remove(idx)).append(", ");
-            } else {
-                sb.append(list.remove(idx));
+        int idx = 0;
+        while (!list.isEmpty()) {
+            idx = (idx + k - 1) % list.size(); // 인덱스 계산 최적화
+            sb.append(list.remove(idx));
+            if (!list.isEmpty()) {
+                sb.append(", ");
             }
         }
 
         sb.append(">");
         bw.write(sb.toString());
         bw.flush();
-        br.close(); bw.close();
-
+        br.close();
+        bw.close();
     }
 }
