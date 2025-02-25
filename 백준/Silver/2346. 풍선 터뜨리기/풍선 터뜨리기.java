@@ -1,51 +1,50 @@
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class Main {
     static class Balloon {
-        int index;
-        int value;
+        private int idx;
+        private int next;
 
-        Balloon(int index, int value) {
-            this.index = index;
-            this.value = value;
+        public Balloon(int idx, int next) {
+            this.idx = idx;
+            this.next = next;
         }
     }
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-        List<Balloon> list = new LinkedList<>();
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int n = Integer.parseInt(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        Deque<Balloon> bl = new ArrayDeque<>();
+        StringBuilder sb = new StringBuilder();
 
-        // 풍선 초기화
-        for (int i = 0; i < n; i++) {
-            int value = scanner.nextInt();
-            list.add(new Balloon(i + 1, value));
+        for(int i=0; i<n; i++) {
+            bl.offer(new Balloon(i+1, Integer.parseInt(st.nextToken())));
         }
 
-        StringBuilder result = new StringBuilder();
-        int currentIndex = 0;
+        while(n-- > 0) {
+            Balloon current = bl.poll();
+            sb.append(current.idx).append(" ");
 
-        while (!list.isEmpty()) {
-            Balloon current = list.remove(currentIndex);
-            result.append(current.index).append(" ");
+            if(bl.isEmpty()) break;
 
-            if (list.isEmpty()) {
-                break;
-            }
-
-            int move = current.value;
-            int size = list.size();
-
-            if (move > 0) {
-                currentIndex = (currentIndex + (move - 1)) % size;
+            int next = current.next;
+            if(next > 0) {
+                for(int i=1; i<next; i++) {
+                    bl.addLast(bl.pollFirst());
+                }
             } else {
-                currentIndex = (currentIndex + move % size + size) % size;
+                for(int i=0; i<Math.abs(next); i++) {
+                    bl.addFirst(bl.pollLast());
+                }
             }
         }
 
-        // 결과 출력
-        System.out.println(result.toString().trim());
+        bw.write(sb.toString());
+        bw.flush();
+        br.close(); bw.close();
+
     }
 }
