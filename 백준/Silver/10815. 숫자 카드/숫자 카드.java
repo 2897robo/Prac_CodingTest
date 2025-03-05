@@ -1,29 +1,50 @@
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
 
-        int n = sc.nextInt();
-        Set<Integer> cardSet = new HashSet<>(); // HashSet을 사용해 중복 검사 시간을 단축
-        for(int i=0; i<n; i++) {
-            cardSet.add(sc.nextInt()); // 바로 HashSet에 추가
+    static boolean binarySearch(int[] arr, int target) {
+        int left = 0, right = arr.length - 1;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+
+            if (arr[mid] == target) return true; // 찾으면 true 반환
+            else if (arr[mid] < target) left = mid + 1; // 오른쪽 탐색
+            else right = mid - 1; // 왼쪽 탐색
         }
 
-        int m = sc.nextInt();
-        int[] arr = new int[m];
-        for(int i=0; i<m; i++) {
-            arr[i] = sc.nextInt();
-        }
-        sc.close();
-
-        for(int i=0; i<m; i++) {
-            // HashSet의 contains 메소드를 사용해 해당 요소가 있는지 확인
-            if(cardSet.contains(arr[i])) {
-                System.out.print(1 + " ");
-            } else {
-                System.out.print(0 + " ");
-            }
-        }
+        return false; // 못 찾았으면 false
     }
+    
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
+
+        int n = Integer.parseInt(br.readLine());
+        int[] nArr = new int[n];
+
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+        for (int i = 0; i < n; i++) {
+            nArr[i] = Integer.parseInt(st.nextToken());
+        }
+        
+        Arrays.sort(nArr);
+
+        int m = Integer.parseInt(br.readLine());
+        st = new StringTokenizer(br.readLine(), " ");
+
+        for (int i = 0; i < m; i++) {
+            int target = Integer.parseInt(st.nextToken());
+            if (binarySearch(nArr, target)) sb.append(1).append(" ");
+            else sb.append(0).append(" ");
+        }
+
+        bw.write(sb.toString());
+        bw.flush();
+        br.close();
+        bw.close();
+    }
+    
 }
