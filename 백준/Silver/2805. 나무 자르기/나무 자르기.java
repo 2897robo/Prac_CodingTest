@@ -12,13 +12,14 @@ public class Main {
 
         st = new StringTokenizer(br.readLine(), " ");
         long[] nArr = new long[n];
+        long max = 0;
         for(int i=0; i<n; i++) {
             nArr[i] = Long.parseLong(st.nextToken());
+            max = Math.max(nArr[i], max);
         }
-        Arrays.sort(nArr);
 
         long left = 0;
-        long right = nArr[n-1];
+        long right = max;
 
         while(left <= right) {
             long mid = (left + right) / 2;
