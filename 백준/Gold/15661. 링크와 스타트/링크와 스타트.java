@@ -1,5 +1,5 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
     static int n;
@@ -7,18 +7,16 @@ public class Main {
     static boolean[] visited;
     static int min = Integer.MAX_VALUE;
 
-    public static void dfs(int idx, int depth, int teamSize) {
-        if (depth == teamSize) {
+    public static void dfs(int depth, int idx, int target) {
+        if (depth == target) {
             calcDiff();
             return;
         }
 
         for (int i = idx; i < n; i++) {
-            if (!visited[i]) {
-                visited[i] = true;
-                dfs(i + 1, depth + 1, teamSize);
-                visited[i] = false;
-            }
+            visited[i] = true;
+            dfs(depth + 1, i + 1, target);
+            visited[i] = false;
         }
     }
 
@@ -35,8 +33,7 @@ public class Main {
             }
         }
 
-        int diff = Math.abs(start - link);
-        min = Math.min(min, diff);
+        min = Math.min(min, Math.abs(start - link));
     }
 
     public static void main(String[] args) throws IOException {
@@ -52,8 +49,7 @@ public class Main {
             }
         }
 
-        // 1명부터 n/2명까지만 팀 만들기
-        for (int i = 1; i <= n / 2; i++) {
+        for (int i = 1; i <= n / 2; i++) { // 양쪽 모두 한 명 이상이어야 하므로
             dfs(0, 0, i);
         }
 
