@@ -1,55 +1,51 @@
-import java.util.*;
-
 class Solution {
+    //        0부터 9까지 좌표 {y,x}
+    int[][] numpadPos = {
+            {3,1}, //0
+            {0,0}, //1
+            {0,1}, //2
+            {0,2}, //3
+            {1,0}, //4
+            {1,1}, //5
+            {1,2}, //6
+            {2,0}, //7
+            {2,1}, //8
+            {2,2}  //9
+    };
+    //초기 위치
+    int[] leftPos = {3,0};
+    int[] rightPos = {3,2};
+    String hand;
+    
     public String solution(int[] numbers, String hand) {
-        StringBuilder sb = new StringBuilder();
-        
-        Map<Integer, int[]> pos = new HashMap<>();
-        int[][] map = {
-            {1,2,3},
-            {4,5,6},
-            {7,8,9},
-            {-1,0,-2}
-        };
-        
-        for(int i=0; i<4; i++) {
-            for(int j=0; j<3; j++) {
-                pos.put(map[i][j], new int[]{i, j});
-            }
-        }
-        
-        int[] left = pos.get(-1); // '*'
-        int[] right = pos.get(-2); // '#'
+        this.hand = (hand.equals("right")) ? "R" : "L";
 
-        for(int num : numbers) {
-            int[] target = pos.get(num);
-            if (num == 1 || num == 4 || num == 7) {
-                sb.append("L");
-                left = target;
-            } else if (num == 3 || num == 6 || num == 9) {
-                sb.append("R");
-                right = target;
-            } else {
-                int lDist = Math.abs(left[0] - target[0]) + Math.abs(left[1] - target[1]);
-                int rDist = Math.abs(right[0] - target[0]) + Math.abs(right[1] - target[1]);
-                if (lDist < rDist) {
-                    sb.append("L");
-                    left = target;
-                } else if (rDist < lDist) {
-                    sb.append("R");
-                    right = target;
-                } else {
-                    if (hand.equals("left")) {
-                        sb.append("L");
-                        left = target;
-                    } else {
-                        sb.append("R");
-                        right = target;
-                    }
-                }
-            }
-        }
+        String answer = "";
+        for (int num : numbers) {
+            String Umji = pushNumber(num);
+            answer += Umji;
 
-        return sb.toString();
+            if(Umji.equals("L")) {leftPos = numpadPos[num]; continue;}
+            if(Umji.equals("R")) {rightPos = numpadPos[num]; continue;}
+        }
+        return answer;
+    }
+
+    //num버튼을 누를 때 어디 손을 사용하는가
+    private String pushNumber(int num) {
+        if(num==1 || num==4 || num==7) return "L";
+        if(num==3 || num==6 || num==9) return "R";
+
+        // 2,5,8,0 일때 어디 손가락이 가까운가
+        if(getDist(leftPos, num) > getDist(rightPos, num)) return "R";
+        if(getDist(leftPos, num) < getDist(rightPos, num)) return "L";
+
+        //같으면 손잡이
+        return this.hand;
+    }
+
+    //해당 위치와 번호 위치의 거리
+    private int getDist(int[] pos, int num) {
+        return Math.abs(pos[0]-numpadPos[num][0]) + Math.abs(pos[1]-numpadPos[num][1]);
     }
 }
