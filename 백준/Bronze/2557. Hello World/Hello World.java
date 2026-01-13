@@ -1,5 +1,9 @@
+import java.io.*;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Hello World!");
+        System.out.println(sb.toString());
     }
 }
