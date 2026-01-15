@@ -1,8 +1,9 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static void main(String args[]) throws IOException {
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
         Person[] p = new Person[n];
@@ -12,15 +13,10 @@ public class Main {
             p[i] = new Person(Integer.parseInt(st.nextToken()), st.nextToken());
         }
 
-        Arrays.sort(p, new Comparator<Person>() {
-            @Override
-            public int compare(Person s1, Person s2) {
-                return s1.age - s2.age;
-            }
-        });
+        Arrays.sort(p);
 
         StringBuilder sb = new StringBuilder();
-        for(int i=0; i<n; i++) {
+        for (int i = 0; i < n; i++) {
             sb.append(p[i]);
         }
 
@@ -28,13 +24,18 @@ public class Main {
     }
 }
 
-class Person {
+class Person implements Comparable<Person> {
     int age;
     String name;
 
     public Person(int age, String name) {
         this.age = age;
         this.name = name;
+    }
+
+    @Override
+    public int compareTo(Person other) {
+        return this.age - other.age;
     }
 
     @Override
