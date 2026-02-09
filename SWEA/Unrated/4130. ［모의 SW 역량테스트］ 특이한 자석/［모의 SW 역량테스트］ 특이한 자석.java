@@ -1,112 +1,79 @@
-// SWEA - 4130 특이한 자석
-
 import java.io.*;
 import java.util.*;
 
+// SWEA #4130 - 자석 문제
+// 4개의 자석이 있고, 각 자석은 8개의 칸으로 이루어짐
+// 회전 명령에 따라 자석이 회전하고, 인접한 자석과의 상호작용을 처리
 public class Solution {
-    
-    static final int MAGNET_COUNT = 4;
-    static final int TOOTH_COUNT = 8;
-    
-    static final int IDX_TOP = 0;
-    static final int IDX_RIGHT = 2;
-    static final int IDX_LEFT = 6;
-    
-    static ArrayList<Integer>[] magnets;
+	static int[][] magnets;      // 4개 행, 각 자석마다 8개 칸
+	static int[][] rotate;       // 회전 명령: [회전할 자석 번호, 회전 방향]
+	static boolean[] visited;    // 회전 처리 중 이미 방문한 자석 체크
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        int T = Integer.parseInt(br.readLine());
+		int T = Integer.parseInt(br.readLine());  // 테스트 케이스 개수
+		for (int tc = 1; tc <= T; tc++) {
 
-        for (int t = 1; t <= T; t++) {
-            int commandCount = Integer.parseInt(br.readLine());
-            
-            magnets = new ArrayList[MAGNET_COUNT];
-            for (int i = 0; i < MAGNET_COUNT; i++) {
-                magnets[i] = new ArrayList<>();
-                StringTokenizer st = new StringTokenizer(br.readLine());
-                while (st.hasMoreTokens()) {
-                    magnets[i].add(Integer.parseInt(st.nextToken()));
-                }
-            }
+			int K = Integer.parseInt(br.readLine());  // 회전할 자석의 개수 (명령의 수)
+			magnets = new int[4][8];   // 4개의 자석, 각각 8칸
+			rotate = new int[K][2];    // K개의 회전 명령 저장
+			
+			// 4개의 자석 정보 입력받기 (각 자석마다 8개의 숫자)
+			for (int i = 0; i < 4; i++) {
+				StringTokenizer st = new StringTokenizer(br.readLine());
+				for (int j = 0; j < 8; j++) {
+					magnets[i][j] = (byte) Integer.parseInt(st.nextToken());
+				}
+			}
+			
+			// K개의 회전 명령 입력받기 (자석 번호, 회전 방향)
+			for (int i = 0; i < K; i++) {
+				StringTokenizer st = new StringTokenizer(br.readLine());
+				rotate[i][0] = Integer.parseInt(st.nextToken())-1;  // 자석 번호 (1번부터 시작하므로 -1)
+				rotate[i][1] = Integer.parseInt(st.nextToken());    // 회전 방향 (1: 시계방향, -1: 반시계방향)
+			}
 
-            for (int k = 0; k < commandCount; k++) {
-                StringTokenizer st = new StringTokenizer(br.readLine());
-                int targetMagnet = Integer.parseInt(st.nextToken()) - 1;
-                int direction = Integer.parseInt(st.nextToken());
+			// 각 회전 명령을 순서대로 처리
+			for (int i = 0; i < K; i++) {
+				visited = new boolean[4];  // 각 명령마다 방문 여부 초기화
+				rotateMagnets(rotate[i][0], rotate[i][1]);  // 자석 회전 (인접 자석도 영향)
+			}
+			
+			// 점수 계산: 각 자석의 첫 번째 위치(0번 인덱스)의 값에 가중치 부여
+			// 자석0: 1점, 자석1: 2점, 자석2: 4점, 자석3: 8점
+			System.out.println("#" + tc + " " + (magnets[0][0] + magnets[1][0]*2 + magnets[2][0]*4 + magnets[3][0]*8));
+		}
+	}
 
-                processCommand(targetMagnet, direction);
-            }
+	private static void rotateMagnets(int magnetNum, int dir) {
+		// 이미 처리한 자석이면 더이상 진행하지 않음 (무한 재귀 방지)
+		if (visited[magnetNum])
+			return;
+		visited[magnetNum] = true;  // 현재 자석을 방문 처리
 
-            int totalScore = calculateScore();
-            sb.append("#").append(t).append(" ").append(totalScore).append("\n");
-        }
-        
-        System.out.println(sb);
-    }
+		// 왼쪽 자석과 현재 자석의 상호작용 확인
+		// 왼쪽 자석의 오른쪽 끝(인덱스 2)과 현재 자석의 왼쪽 끝(인덱스 6)이 다르면
+		// 왼쪽 자석도 반대 방향으로 회전
+		if (magnetNum - 1 >= 0 && magnets[magnetNum][6] != magnets[magnetNum - 1][2]) {
+			rotateMagnets(magnetNum - 1, dir*-1);
+		}
+		
+		// 오른쪽 자석과 현재 자석의 상호작용 확인
+		// 현재 자석의 오른쪽 끝(인덱스 2)과 오른쪽 자석의 왼쪽 끝(인덱스 6)이 다르면
+		// 오른쪽 자석도 반대 방향으로 회전
+		if (magnetNum + 1 < 4 && magnets[magnetNum][2] != magnets[magnetNum + 1][6]) {
+			rotateMagnets(magnetNum + 1, dir*-1);
+		}
+		
+		// 현재 자석 회전 처리
+		// 배열을 시계방향(+dir) 또는 반시계방향(-dir)으로 회전
+		int[] temp = new int[8];
+		for (int i = 0; i < 8; i++) {
+			// (i - dir + 8) % 8: 회전 방향에 따라 새로운 인덱스 계산
+			temp[i] = magnets[magnetNum][(i - dir + 8) % 8];
+		}
+		magnets[magnetNum] = temp;  // 회전된 배열로 업데이트
+	}
 
-    /**
-     * 하나의 회전 명령을 처리하는 메서드
-     * 1. 각 자석의 회전 방향을 결정 (rotatePlan 배열)
-     * 2. 결정된 방향대로 실제 회전 수행 (Collections.rotate)
-     */
-    private static void processCommand(int targetIdx, int dir) {
-        int[] rotatePlan = new int[MAGNET_COUNT]; // 각 자석의 회전 방향 저장 (0: 정지)
-        rotatePlan[targetIdx] = dir;
-
-        // 1. 타겟 기준 왼쪽 자석들 전파 확인
-        for (int i = targetIdx; i > 0; i--) {
-            // 왼쪽 자석(i-1)의 3시방향(2) vs 현재 자석(i)의 9시방향(6) 비교
-            int leftMagnetRightTooth = magnets[i - 1].get(IDX_RIGHT);
-            int currentMagnetLeftTooth = magnets[i].get(IDX_LEFT);
-
-            if (leftMagnetRightTooth != currentMagnetLeftTooth) {
-                // 극이 다르면 반대 방향으로 회전
-                rotatePlan[i - 1] = rotatePlan[i] * -1;
-            } else {
-                // 극이 같으면 회전하지 않고 전파 중단
-                break;
-            }
-        }
-
-        // 2. 타겟 기준 오른쪽 자석들 전파 확인
-        for (int i = targetIdx; i < MAGNET_COUNT - 1; i++) {
-            // 현재 자석(i)의 3시방향(2) vs 오른쪽 자석(i+1)의 9시방향(6) 비교
-            int currentMagnetRightTooth = magnets[i].get(IDX_RIGHT);
-            int rightMagnetLeftTooth = magnets[i + 1].get(IDX_LEFT);
-
-            if (currentMagnetRightTooth != rightMagnetLeftTooth) {
-                // 극이 다르면 반대 방향으로 회전
-                rotatePlan[i + 1] = rotatePlan[i] * -1;
-            } else {
-                // 극이 같으면 회전하지 않고 전파 중단
-                break;
-            }
-        }
-
-        // 3. 실제 회전 적용
-        for (int i = 0; i < MAGNET_COUNT; i++) {
-            if (rotatePlan[i] != 0) {
-                // Collections.rotate: 양수면 오른쪽(시계), 음수면 왼쪽(반시계)으로 shift
-                Collections.rotate(magnets[i], rotatePlan[i]);
-            }
-        }
-    }
-
-    /**
-     * 최종 점수를 계산하는 메서드
-     * 1번 자석: 1점, 2번 자석: 2점, 3번 자석: 4점, 4번 자석: 8점
-     * (각 자석의 12시 방향(0번 인덱스)이 N극(0)이면 0점, S극(1)이면 점수 획득)
-     */
-    private static int calculateScore() {
-        int sum = 0;
-        for (int i = 0; i < MAGNET_COUNT; i++) {
-            if (magnets[i].get(IDX_TOP) == 1) { // S극일 경우 점수 추가
-                sum += (1 << i); // 2^i 점 (1, 2, 4, 8)
-            }
-        }
-        return sum;
-    }
 }
