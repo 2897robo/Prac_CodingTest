@@ -1,49 +1,49 @@
+// BOJ 1018 체스판 다시 칠하기
+
 import java.util.*;
 import java.io.*;
 
 public class Main {
+    static int N, M;
+    static int[][] board;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-
-        char[][] board = new char[n][m];
-        for(int i=0; i<n; i++) {
-            board[i] = br.readLine().toCharArray();
-        }
-
-        int count = Integer.MAX_VALUE;
-
-        for(int i=0; i<=n-8; i++) {
-            for(int j=0; j<=m-8; j++) {
-                int ch1 = countChange(board, i, j, 'W');
-
-                int ch2 = countChange(board, i, j, 'B');
-
-                count = Math.min(count, Math.min(ch1, ch2));
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        board = new int[N][M];
+        for (int i = 0; i < N; i++) {
+            String line = br.readLine();
+            for (int j = 0; j < M; j++) {
+                board[i][j] = line.charAt(j) == 'W' ? 0 : 1;
             }
         }
 
-        System.out.println(count);
+        int minRepaint = Integer.MAX_VALUE;
+        for (int i = 0; i <= N - 8; i++) {
+            for (int j = 0; j <= M - 8; j++) {
+                minRepaint = Math.min(minRepaint, repaintCount(i, j));
+            }
+        }
+        System.out.println(minRepaint);
     }
 
-    public static int countChange(char[][] board, int startX, int startY, char firstColor) {
-        int changes = 0;
-        
-        for(int i=0; i<8; i++) {
-            for(int j=0; j<8; j++) {
-                if(board[startX+i][startY+j] != firstColor) {
-                    changes++;
+    private static int repaintCount(int startX, int startY) {
+        int repaintWhite = 0; // Starting with white
+        int repaintBlack = 0; // Starting with black
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                int expectedColor = (i + j) % 2; // 0 for white, 1 for black
+                if (board[startX + i][startY + j] != expectedColor) {
+                    repaintWhite++;
+                } else {
+                    repaintBlack++;
                 }
-
-                firstColor = (firstColor == 'W') ? 'B' : 'W';
             }
-
-            firstColor = (firstColor == 'W') ? 'B' : 'W';
         }
-
-        return changes;
+        return Math.min(repaintWhite, repaintBlack);
     }
+
 }
