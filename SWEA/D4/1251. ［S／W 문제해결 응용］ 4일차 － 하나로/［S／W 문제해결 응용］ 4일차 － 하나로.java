@@ -4,6 +4,24 @@ import java.util.*;
 import java.io.*;
 
 public class Solution {
+    static int[] parent;
+
+    static class Edge implements Comparable<Edge> {
+        int start, end;
+        double cost;
+
+        Edge(int start, int end, double cost) {
+            this.start = start;
+            this.end = end;
+            this.cost = cost;
+        }
+
+        @Override
+        public int compareTo(Edge o) {
+            return Double.compare(this.cost, o.cost);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
@@ -20,45 +38,49 @@ public class Solution {
                 X[i] = Long.parseLong(stX.nextToken());
                 Y[i] = Long.parseLong(stY.nextToken());
             }
-
             double E = Double.parseDouble(br.readLine().trim());
 
-            boolean[] visited = new boolean[N];
-            double[] minEdge = new double[N];
-            Arrays.fill(minEdge, Double.MAX_VALUE);
-            
-            double totalCost = 0;
-            minEdge[0] = 0;
-
+            List<Edge> edges = new ArrayList<>();
             for (int i = 0; i < N; i++) {
-                double min = Double.MAX_VALUE;
-                int current = -1;
-
-                for (int j = 0; j < N; j++) {
-                    if (!visited[j] && min > minEdge[j]) {
-                        min = minEdge[j];
-                        current = j;
-                    }
+                for (int j = i + 1; j < N; j++) {
+                    long dx = X[i] - X[j];
+                    long dy = Y[i] - Y[j];
+                    double cost = E * (dx * dx + dy * dy);
+                    edges.add(new Edge(i, j, cost));
                 }
+            }
 
-                if (current == -1) break;
-                
-                visited[current] = true;
-                totalCost += min;
+            Collections.sort(edges);
 
-                for (int j = 0; j < N; j++) {
-                    if (!visited[j]) {
-                        long dx = X[current] - X[j];
-                        long dy = Y[current] - Y[j];
-                        double cost = E * (dx * dx + dy * dy);
-                        if (minEdge[j] > cost) {
-                            minEdge[j] = cost;
-                        }
-                    }
+            parent = new int[N];
+            for (int i = 0; i < N; i++) parent[i] = i;
+
+            double totalCost = 0;
+            int count = 0;
+            for (Edge edge : edges) {
+                if (union(edge.start, edge.end)) {
+                    totalCost += edge.cost;
+                    count++;
+                    if (count == N - 1) break;
                 }
             }
             sb.append("#").append(t).append(" ").append(Math.round(totalCost)).append("\n");
         }
         System.out.print(sb);
+    }
+
+    static int find(int a) {
+        if (parent[a] == a) return a;
+        return parent[a] = find(parent[a]);
+    }
+
+    static boolean union(int a, int b) {
+        int rootA = find(a);
+        int rootB = find(b);
+        if (rootA != rootB) {
+            parent[rootA] = rootB;
+            return true;
+        }
+        return false;
     }
 }
